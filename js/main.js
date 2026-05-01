@@ -19,7 +19,7 @@
  *   • «Мегатренинг» — шаговое обучение по всем играм;
  *   • «Применить чемпиона» — заменяет текущий мозг чемпионом на этой игре.
  */
-import * as THREE from 'three';
+import * as THREE from 'https://unpkg.com/three@0.160.0/build/three.module.js';
 import { World } from './world.js';
 import { Agent } from './ai/agent.js';
 import { Brain } from './ai/brain.js';
