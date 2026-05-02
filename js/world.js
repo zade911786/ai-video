@@ -1,10 +1,8 @@
 /**
- * World 3.0 — сцена + split-screen
+ * World 3.0 — fixed Vercel/browser version
  */
 
-import * as THREE from "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js";
-
-import { OrbitControls } from "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/controls/OrbitControls.js";
+import * as THREE from "https://unpkg.com/three@0.160.0/build/three.module.js?module";
 
 console.log("🌍 world.js loaded");
 
@@ -23,9 +21,13 @@ export class World {
       Math.min(window.devicePixelRatio, 2)
     );
 
-    const w0 = container.clientWidth || window.innerWidth;
+    const w0 =
+      container.clientWidth ||
+      window.innerWidth;
 
-    const h0 = container.clientHeight || window.innerHeight;
+    const h0 =
+      container.clientHeight ||
+      window.innerHeight;
 
     this.renderer.setSize(w0, h0);
 
@@ -41,32 +43,36 @@ export class World {
 
     this.renderer.setScissorTest(true);
 
-    container.appendChild(this.renderer.domElement);
+    container.appendChild(
+      this.renderer.domElement
+    );
 
     this.scene = new THREE.Scene();
 
     this.scene.background =
-      new THREE.Color(0x1a1025);
+      new THREE.Color(0x12091f);
 
-    this.camera = new THREE.PerspectiveCamera(
-      50,
-      w0 / h0,
-      0.1,
-      800
+    this.camera =
+      new THREE.PerspectiveCamera(
+        50,
+        w0 / h0,
+        0.1,
+        800
+      );
+
+    this.camera.position.set(
+      12,
+      9,
+      14
     );
-
-    this.camera.position.set(12, 9, 14);
 
     this.camera.lookAt(0, 0, 0);
 
-    this.controls = new OrbitControls(
-      this.camera,
-      this.renderer.domElement
-    );
-
-    this.controls.enableDamping = true;
-
-    this.controls.dampingFactor = 0.08;
+    // fake controls replacement
+    this.controls = {
+      enabled: false,
+      update() {}
+    };
 
     this.setupLights();
 
@@ -96,17 +102,19 @@ export class World {
 
   setupLights() {
 
-    const amb = new THREE.AmbientLight(
-      0xffffff,
-      0.6
-    );
+    const amb =
+      new THREE.AmbientLight(
+        0xffffff,
+        0.7
+      );
 
     this.scene.add(amb);
 
-    const sun = new THREE.DirectionalLight(
-      0xffffff,
-      1.2
-    );
+    const sun =
+      new THREE.DirectionalLight(
+        0xffffff,
+        1.4
+      );
 
     sun.position.set(10, 20, 10);
 
@@ -119,16 +127,21 @@ export class World {
 
   buildGround() {
 
-    const ground = new THREE.Mesh(
+    const ground =
+      new THREE.Mesh(
 
-      new THREE.CircleGeometry(22, 64),
+        new THREE.CircleGeometry(
+          22,
+          64
+        ),
 
-      new THREE.MeshStandardMaterial({
-        color: 0xf0d4e8
-      })
-    );
+        new THREE.MeshStandardMaterial({
+          color: 0xf0d4e8
+        })
+      );
 
-    ground.rotation.x = -Math.PI / 2;
+    ground.rotation.x =
+      -Math.PI / 2;
 
     ground.receiveShadow = true;
 
@@ -184,6 +197,18 @@ export class World {
       14
     );
 
+    this.split.leftCam.lookAt(
+      0,
+      0,
+      0
+    );
+
+    this.split.rightCam.lookAt(
+      0,
+      0,
+      0
+    );
+
     if (leftBuild) {
       leftBuild(this.split.leftScene);
     }
@@ -201,31 +226,27 @@ export class World {
 
     switch (mode) {
 
-      case "free":
-
-        this.controls.enabled = true;
-
-        break;
-
       case "red":
 
-        this.followTarget = agents.red;
-
-        this.controls.enabled = false;
+        this.followTarget =
+          agents.red;
 
         break;
 
       case "blue":
 
-        this.followTarget = agents.blue;
-
-        this.controls.enabled = false;
+        this.followTarget =
+          agents.blue;
 
         break;
+
+      default:
+
+        this.followTarget = null;
     }
   }
 
-  updateCamera(dt, agents) {
+  updateCamera(dt) {
 
     if (
       (
@@ -238,11 +259,12 @@ export class World {
       const tp =
         this.followTarget.mesh.position;
 
-      const offset = new THREE.Vector3(
-        0,
-        5,
-        -6
-      );
+      const offset =
+        new THREE.Vector3(
+          0,
+          5,
+          -6
+        );
 
       this.camera.position.lerp(
         tp.clone().add(offset),
@@ -260,7 +282,6 @@ export class World {
   updateFloaters(dt) {
 
     // placeholder
-
   }
 
   onResize() {
@@ -279,7 +300,11 @@ export class World {
 
     this.camera.updateProjectionMatrix();
 
-    this.renderer.setSize(w, h, false);
+    this.renderer.setSize(
+      w,
+      h,
+      false
+    );
   }
 
   render() {
@@ -376,7 +401,9 @@ export class World {
     this.scene.traverse(obj => {
 
       if (obj.userData.gameObj) {
+
         toRemove.push(obj);
+
       }
 
     });
