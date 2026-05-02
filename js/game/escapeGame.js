@@ -15,7 +15,7 @@
  *  Для побуждения к локомоции agent использует actHybrid() с heuristic
  *  «если лазер в X < torso.x — прыжок вперёд, иначе назад».
  */
-import * as THREE from 'three';
+import * as THREE from 'https://unpkg.com/three@0.160.0/build/three.module.js';
 import { Game } from './gameBase.js';
 import { encodeState } from '../ai/brain.js';
 import { curriculum } from '../ai/curriculum.js';
