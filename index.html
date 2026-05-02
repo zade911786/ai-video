@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8" />
-<title>🎪 Digital Circus AI — Ultimate Debug Loader</title>
+<title>🎪 Digital Circus AI</title>
 
 <meta name="viewport" content="width=device-width,initial-scale=1" />
 
@@ -20,71 +20,57 @@
 <style>
 html,body{
   margin:0;
-  padding:0;
   width:100%;
   height:100%;
   overflow:hidden;
-  background:#0b0613;
+  background:#090011;
   color:white;
-  font-family:monospace;
+  font-family:sans-serif;
+}
+
+#canvas-container{
+  position:fixed;
+  inset:0;
 }
 
 #loading-screen{
   position:fixed;
   inset:0;
+  background:#090011;
   display:flex;
   align-items:center;
   justify-content:center;
-  background:#0b0613;
+  z-index:99999;
+  transition:.4s;
+}
+
+.loader{
+  text-align:center;
+}
+
+.loader h1{
+  color:#ff5c93;
+}
+
+#debug{
+  position:fixed;
+  left:10px;
+  right:10px;
+  bottom:10px;
+  max-height:40vh;
+  overflow:auto;
+  background:#111;
+  border:1px solid #444;
+  padding:10px;
+  font-family:monospace;
+  font-size:12px;
   z-index:999999;
-}
-
-.loader-box{
-  width:min(900px,95vw);
-  max-height:90vh;
-  overflow:auto;
-  background:#140d1f;
-  border:1px solid #ff4d7a;
-  border-radius:20px;
-  padding:20px;
-  box-shadow:0 0 40px rgba(255,0,100,.3);
-}
-
-.title{
-  font-size:28px;
-  margin-bottom:10px;
-  color:#ff5b88;
-}
-
-.log{
-  background:#0d0d0d;
-  border:1px solid #333;
-  border-radius:12px;
-  padding:12px;
-  margin-top:15px;
   white-space:pre-wrap;
-  overflow-wrap:anywhere;
-  line-height:1.5;
-  max-height:400px;
-  overflow:auto;
 }
 
-.ok{
-  color:#67ff9d;
-}
-
-.err{
-  color:#ff6b6b;
-}
-
-.warn{
-  color:#ffd36b;
-}
-
-#app{
-  width:100%;
-  height:100%;
-  display:none;
+.hidden{
+  opacity:0;
+  pointer-events:none;
 }
 </style>
 </head>
@@ -92,166 +78,64 @@ html,body{
 <body>
 
 <div id="loading-screen">
-  <div class="loader-box">
-
-    <div class="title">
-      🎪 Digital Circus AI — Full Debug Loader
-    </div>
-
-    <div id="status">
-      Starting...
-    </div>
-
-    <div class="log" id="logs"></div>
-
+  <div class="loader">
+    <h1>🎪 Digital Circus AI</h1>
+    <p>Loading...</p>
   </div>
 </div>
 
-<div id="app"></div>
+<div id="canvas-container"></div>
+
+<div id="debug">BOOTING...\n</div>
 
 <script type="module">
 
-const logs = document.getElementById("logs");
-const statusEl = document.getElementById("status");
+const debug = document.getElementById("debug");
 
-function log(msg, cls=""){
-  console.log(msg);
+function log(...a){
+  console.log(...a);
 
-  const div = document.createElement("div");
-
-  if(cls) div.className = cls;
-
-  div.textContent = msg;
-
-  logs.appendChild(div);
-
-  logs.scrollTop = logs.scrollHeight;
+  debug.textContent += "\n" + a.join(" ");
 }
 
-function fatal(title, err){
+window.onerror = (msg, src, line, col, err)=>{
+  log("❌ ERROR:", msg);
+  if(err?.stack) log(err.stack);
+};
 
-  statusEl.innerHTML = `
-    <span class="err">❌ ${title}</span>
-  `;
-
-  log("", "");
-
-  log("========== ERROR ==========", "err");
-
-  if(err?.stack){
-    log(err.stack, "err");
-  }else{
-    log(String(err), "err");
-  }
-
-  log("", "");
-
-  log("========== ENVIRONMENT ==========", "warn");
-
-  log("URL: " + location.href);
-  log("USER AGENT: " + navigator.userAgent);
-  log("ONLINE: " + navigator.onLine);
-  log("SCREEN: " + window.innerWidth + " x " + window.innerHeight);
-  log("TIME: " + new Date().toString());
-
-}
-
-window.addEventListener("error", e => {
-  fatal("RUNTIME ERROR", e.error || e.message);
-});
-
-window.addEventListener("unhandledrejection", e => {
-  fatal("PROMISE REJECTION", e.reason);
-});
-
-async function checkFile(path){
-
-  log("📦 Checking " + path);
-
-  const res = await fetch(path);
-
-  if(!res.ok){
-    throw new Error(
-      path + " -> HTTP " + res.status
-    );
-  }
-
-  const txt = await res.text();
-
-  log("✅ Found " + path + " (" + txt.length + " bytes)", "ok");
-
-  return txt;
-}
+window.onunhandledrejection = e=>{
+  log("❌ PROMISE:", e.reason);
+};
 
 async function boot(){
 
   try{
 
-    statusEl.innerHTML = `
-      <span class="warn">🔄 Loading modules...</span>
-    `;
+    log("🚀 importing main.js");
 
-    const files = [
+    await import("./js/main.js");
 
-      "./js/main.js",
-
-      "./js/world.js",
-
-      "./js/ai/agent.js",
-      "./js/ai/brain.js",
-
-      "./js/games/worldGame.js",
-      "./js/games/flappyGame.js",
-      "./js/games/mazeGame.js",
-      "./js/games/sandboxGame.js",
-      "./js/games/escapeGame.js"
-
-    ];
-
-    for(const file of files){
-
-      try{
-        await checkFile(file);
-      }
-      catch(err){
-        fatal("FILE CHECK FAILED", err);
-        return;
-      }
-
-    }
-
-    log("");
-    log("🚀 Importing main.js...", "warn");
-
-    try{
-
-      await import("./js/main.js");
-
-    }catch(err){
-
-      fatal("IMPORT FAILED", err);
-
-      return;
-    }
-
-    log("✅ ALL IMPORTS SUCCESSFUL", "ok");
-
-    statusEl.innerHTML = `
-      <span class="ok">✅ App Loaded Successfully</span>
-    `;
+    log("✅ main.js loaded");
 
     setTimeout(()=>{
+      const ls = document.getElementById("loading-screen");
 
-      document.getElementById("loading-screen").style.display = "none";
+      if(ls){
+        ls.classList.add("hidden");
+      }
 
-      document.getElementById("app").style.display = "block";
-
+      log("✅ loader hidden");
     },1000);
 
-  }
-  catch(err){
+  }catch(err){
 
-    fatal("BOOT FAILED", err);
+    log("❌ IMPORT FAILED");
+
+    log(err);
+
+    if(err?.stack){
+      log(err.stack);
+    }
 
   }
 
