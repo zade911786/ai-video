@@ -10,7 +10,7 @@
  *   • Валидация опыта pushExperience().
  *   • Методы для evolution (brain.clone / mutate / adopt уже в Brain).
  */
-import * as THREE from 'three';
+import * as THREE from 'https://unpkg.com/three@0.160.0/build/three.module.js';
 import { ACTION_DIM } from './brain.js';
 import { Ragdoll } from '../physics/physics.js';
 
