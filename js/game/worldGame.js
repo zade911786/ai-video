@@ -10,7 +10,7 @@
  *   • Гарантированное обновление _lastAction / _lastState.
  *   • Корректная очистка при teardown (звёзды удаляются).
  */
-import * as THREE from 'three';
+import * as THREE from 'https://unpkg.com/three@0.160.0/build/three.module.js';
 import { Game } from './gameBase.js';
 import { encodeState } from '../ai/brain.js';
 import { curriculum } from '../ai/curriculum.js';
