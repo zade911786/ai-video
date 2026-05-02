@@ -11,7 +11,7 @@
  *   • Проход через проём = +2, best score обновляется отдельно для каждой стороны.
  *   • Экспириенс пушится каждый кадр: s и sNext различны.
  */
-import * as THREE from 'three';
+import * as THREE from 'https://unpkg.com/three@0.160.0/build/three.module.js';
 import { Game } from './gameBase.js';
 import { encodeState } from '../ai/brain.js';
 import { flappyHeuristic } from '../ai/heuristics.js';
