@@ -15,7 +15,7 @@
  *     • sNext энкодится после действия
  *     • learnFromTeacher вызывается с актуальным best action
  */
-import * as THREE from 'three';
+import * as THREE from 'https://unpkg.com/three@0.160.0/build/three.module.js';
 import { Game } from './gameBase.js';
 import { encodeState } from '../ai/brain.js';
 import { astar, pathToAction } from '../ai/heuristics.js';
