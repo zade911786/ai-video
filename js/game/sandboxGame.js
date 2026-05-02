@@ -10,7 +10,7 @@
  *     награда за рост башни масштабируется высотой.
  *   • sNext ≠ s, _lastAction корректно используется при pushExperience.
  */
-import * as THREE from 'three';
+import * as THREE from 'https://unpkg.com/three@0.160.0/build/three.module.js';
 import { Game } from './gameBase.js';
 import { encodeState } from '../ai/brain.js';
 import { curriculum } from '../ai/curriculum.js';
