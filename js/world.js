@@ -9,7 +9,7 @@
  *     Это нужно, чтобы смерть одного агента не рестартила другого.
  *   • Сохранена обычная одиночная камера + свободная/кинематическая.
  */
-import * as THREE from 'three';
+import * as THREE from 'https://unpkg.com/three@0.160.0/build/three.module.js';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 
 export class World {
