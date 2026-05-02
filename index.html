@@ -247,6 +247,57 @@
   </div>
 </div>
 
-<script type="module" src="./js/main.js"></script>
+<script type="module">
+(async () => {
+  const loading = document.getElementById('loading-screen');
+
+  try {
+    window.addEventListener('error', (e) => {
+      console.error('GLOBAL ERROR:', e.error || e.message);
+
+      loading.innerHTML = `
+        <div style="padding:20px;color:white;font-family:monospace">
+          <h2>❌ Global Error</h2>
+          <pre>${e.message}</pre>
+          <pre>${e.filename || ''}</pre>
+          <pre>line: ${e.lineno}</pre>
+        </div>
+      `;
+    });
+
+    window.addEventListener('unhandledrejection', (e) => {
+      console.error('PROMISE ERROR:', e.reason);
+
+      loading.innerHTML = `
+        <div style="padding:20px;color:white;font-family:monospace">
+          <h2>❌ Promise Rejection</h2>
+          <pre>${e.reason?.stack || e.reason}</pre>
+        </div>
+      `;
+    });
+
+    const mod = await import('./js/main.js');
+
+    console.log('MAIN LOADED', mod);
+
+  } catch (err) {
+    console.error('IMPORT FAILED:', err);
+
+    loading.innerHTML = `
+      <div style="
+        padding:20px;
+        color:#ff8080;
+        background:black;
+        font-family:monospace;
+        overflow:auto;
+        height:100vh;
+      ">
+        <h1>❌ JS IMPORT FAILED</h1>
+        <pre>${err.stack || err}</pre>
+      </div>
+    `;
+  }
+})();
+</script>
 </body>
 </html>
