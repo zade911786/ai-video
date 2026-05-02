@@ -1,114 +1,98 @@
 console.log("🎪 MAIN START");
 
-async function testImport(path) {
+document.body.innerHTML += `
+<div style="
+position:fixed;
+top:20px;
+left:20px;
+z-index:999999;
+background:#111;
+color:#5cff87;
+padding:20px;
+font-family:monospace;
+border:2px solid #5cff87;
+">
+✅ MAIN.JS RUNNING
+</div>
+`;
 
-  try {
+import("./world.js")
+.then(mod => {
 
-    console.log("📦 IMPORTING:", path);
-
-    const mod = await import(path);
-
-    console.log("✅ SUCCESS:", path);
-
-    document.body.innerHTML += `
-      <div style="
-        background:#111;
-        color:#5cff87;
-        padding:10px;
-        margin:10px;
-        border:1px solid #5cff87;
-        font-family:monospace;
-      ">
-        ✅ SUCCESS: ${path}
-      </div>
-    `;
-
-    return mod;
-
-  } catch (err) {
-
-    console.error("❌ FAILED:", path, err);
-
-    document.body.innerHTML += `
-      <div style="
-        background:#111;
-        color:#ff8080;
-        padding:20px;
-        margin:20px;
-        border:2px solid red;
-        font-family:monospace;
-        overflow:auto;
-      ">
-        <h2>❌ FAILED IMPORT</h2>
-
-        <pre>${path}</pre>
-
-        <hr>
-
-        <pre>${err.message}</pre>
-
-        <hr>
-
-        <pre>${err.stack || err}</pre>
-      </div>
-    `;
-
-    throw err;
-  }
-}
-
-try {
-
-  // CORE
-  await testImport('./world.js');
-
-  await testImport('./ai/agent.js');
-
-  await testImport('./ai/brain.js');
-
-  await testImport('./ai/curriculum.js');
-
-  await testImport('./ai/evolution.js');
-
-  // SIM
-  await testImport('./sim/multiSim.js');
-
-  await testImport('./sim/megaTrain.js');
-
-  await testImport('./sim/headlessSims.js');
-
-  // GAMES
-  await testImport('./games/worldGame.js');
-
-  await testImport('./games/flappyGame.js');
-
-  await testImport('./games/mazeGame.js');
-
-  await testImport('./games/sandboxGame.js');
-
-  await testImport('./games/escapeGame.js');
-
-  // UI
-  await testImport('./ui.js');
-
-  await testImport('./save.js');
+  console.log("✅ world.js imported");
 
   document.body.innerHTML += `
-    <div style="
-      background:#000;
-      color:#5cff87;
-      padding:30px;
-      margin:20px;
-      border:3px solid #5cff87;
-      font-size:24px;
-      font-family:monospace;
-    ">
-      ✅ ALL IMPORTS SUCCESSFUL
-    </div>
+  <div style="
+  position:fixed;
+  top:120px;
+  left:20px;
+  z-index:999999;
+  background:#111;
+  color:#5cff87;
+  padding:20px;
+  font-family:monospace;
+  border:2px solid #5cff87;
+  ">
+  ✅ WORLD IMPORTED
+  </div>
   `;
 
-} catch (e) {
+  const container = document.getElementById("canvas-container");
 
-  console.error("💥 MAIN CRASH:", e);
+  const world = new mod.World(container);
 
-}
+  console.log("✅ WORLD CREATED");
+
+  document.body.innerHTML += `
+  <div style="
+  position:fixed;
+  top:220px;
+  left:20px;
+  z-index:999999;
+  background:#111;
+  color:#5cff87;
+  padding:20px;
+  font-family:monospace;
+  border:2px solid #5cff87;
+  ">
+  ✅ WORLD CREATED
+  </div>
+  `;
+
+  function animate(){
+
+    requestAnimationFrame(animate);
+
+    world.updateFloaters(0.016);
+    world.render();
+
+  }
+
+  animate();
+
+})
+.catch(err => {
+
+  console.error(err);
+
+  document.body.innerHTML += `
+  <div style="
+  position:fixed;
+  top:20px;
+  left:20px;
+  right:20px;
+  z-index:999999;
+  background:#300;
+  color:#ff8080;
+  padding:20px;
+  font-family:monospace;
+  white-space:pre-wrap;
+  border:2px solid red;
+  ">
+  ❌ ERROR
+
+  ${err.stack || err}
+  </div>
+  `;
+
+});
