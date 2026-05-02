@@ -1,372 +1,265 @@
 <!doctype html>
-<html lang="ru">
+<html lang="en">
 <head>
-  <meta charset="utf-8" />
-  <title>🎪 Digital Circus AI 3.0 — Evolution Edition</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <link rel="stylesheet" href="./css/style.css" />
+<meta charset="utf-8" />
+<title>🎪 Digital Circus AI — Ultimate Debug Loader</title>
 
-  <script type="importmap">
-  {
-    "imports": {
-      "three":         "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js",
-      "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"
-    }
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+
+<link rel="stylesheet" href="./css/style.css" />
+
+<script type="importmap">
+{
+  "imports": {
+    "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js",
+    "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"
   }
-  </script>
-</head>
-<body>
+}
+</script>
 
-<!-- ========== Loading screen ========== -->
-<div id="loading-screen">
-  <div class="loader">
-    <div class="ring"></div>
-    <div class="label">Загружаем ИИ цирк…</div>
-    <div class="tip">Наблюдайте, как ИИ учится уворачиваться от лазеров, проходить лабиринты и строить башни.</div>
-  </div>
-</div>
-
-<!-- ========== Top nav ========== -->
-<nav id="topbar">
-  <div class="brand">🎪 <b>Digital Circus AI</b> <span class="v">3.0 · Evolution Edition</span></div>
-  <div class="nav">
-    <button class="nav-btn" data-nav="world">🌍 Мирок</button>
-    <button class="nav-btn" data-nav="flappy">🐦 Flappy (split)</button>
-    <button class="nav-btn" data-nav="maze">🧭 Лабиринт (split)</button>
-    <button class="nav-btn" data-nav="sandbox">🧱 Физ-песочница</button>
-    <button class="nav-btn" data-nav="escape">🚨 Побег (ragdoll)</button>
-  </div>
-  <div class="spacer"></div>
-  <button class="nav-btn secondary" id="stats-btn">📊 Мозг</button>
-  <button class="nav-btn secondary" id="evo-btn">🧬 Эволюция</button>
-  <button class="nav-btn secondary" id="multisim-btn">⚡ Парал. симуляции</button>
-  <button class="nav-btn secondary" id="megatrain-btn">🎯 Мегатренинг</button>
-</nav>
-
-<!-- ========== Main ========== -->
-<main>
-  <!-- Left HUD -->
-  <aside class="hud hud-left">
-    <div class="card red">
-      <div class="c-hdr"><span class="dot red"></span><b>КЕЙН</b> <span class="chip" id="red-gen">g1</span></div>
-      <div class="stats">
-        <div><small>XP</small><b id="red-xp">0</b></div>
-        <div><small>Skill</small><b id="red-skill">0.0%</b></div>
-        <div><small>ε</small><b id="red-eps">0.9</b></div>
-        <div><small>Память</small><b id="red-mem">0/0</b></div>
-      </div>
-      <div class="bar"><div class="fill" id="red-skill-bar"></div></div>
-      <div class="acts">
-        <button class="btn sm" id="red-sleep">😴 спать</button>
-        <button class="btn sm" id="red-wake">✨ бодр</button>
-      </div>
-    </div>
-
-    <div class="card blue">
-      <div class="c-hdr"><span class="dot blue"></span><b>ЭЙС</b> <span class="chip" id="blue-gen">g1</span></div>
-      <div class="stats">
-        <div><small>XP</small><b id="blue-xp">0</b></div>
-        <div><small>Skill</small><b id="blue-skill">0.0%</b></div>
-        <div><small>ε</small><b id="blue-eps">0.05</b></div>
-        <div><small>Память</small><b id="blue-mem">0/0</b></div>
-      </div>
-      <div class="bar"><div class="fill" id="blue-skill-bar"></div></div>
-      <div class="acts">
-        <button class="btn sm" id="blue-sleep">😴 спать</button>
-        <button class="btn sm" id="blue-wake">✨ бодр</button>
-      </div>
-    </div>
-
-    <div class="card mini">
-      <div class="c-hdr">🧠 Общий опыт</div>
-      <div><small>Bus</small> <b id="bus">0</b> экспериенсов</div>
-      <div><small>Эпоха</small> <b id="epoch">1</b></div>
-      <div class="acts">
-        <button class="btn sm accent" id="teach-btn">📚 ЭЙС учит КЕЙНА</button>
-        <button class="btn sm accent" id="boost-btn">⚡ Boost-learn</button>
-      </div>
-    </div>
-  </aside>
-
-  <!-- Canvas -->
-  <div id="canvas-container"></div>
-
-  <!-- Right HUD -->
-  <aside class="hud hud-right">
-    <div class="card">
-      <div class="c-hdr">📷 Камера</div>
-      <div class="grid2">
-        <button class="btn sm" data-cam="free">Свободная</button>
-        <button class="btn sm" data-cam="iso">Изо</button>
-        <button class="btn sm" data-cam="top">Сверху</button>
-        <button class="btn sm" data-cam="cinematic">Cinema</button>
-        <button class="btn sm" data-cam="red">За КЕЙНОМ</button>
-        <button class="btn sm" data-cam="blue">За ЭЙСОМ</button>
-      </div>
-    </div>
-
-    <div class="card">
-      <div class="c-hdr">⚡ Скорость <span class="chip" id="speed-ind">1×</span></div>
-      <div class="grid4">
-        <button class="btn sm" data-speed="0.5">0.5×</button>
-        <button class="btn sm active" data-speed="1">1×</button>
-        <button class="btn sm" data-speed="2">2×</button>
-        <button class="btn sm" data-speed="4">4×</button>
-        <button class="btn sm" data-speed="8">8×</button>
-        <button class="btn sm" data-speed="16">16×</button>
-      </div>
-    </div>
-
-    <div class="card">
-      <div class="c-hdr">💾 Сохранения</div>
-      <div class="acts col">
-        <button class="btn sm" id="save-btn">💾 Сохранить</button>
-        <button class="btn sm" id="load-btn">📥 Загрузить</button>
-        <button class="btn sm danger" id="reset-btn">🧼 Полный сброс</button>
-      </div>
-    </div>
-
-    <!-- Game-specific HUD -->
-    <div class="card" id="game-hud"></div>
-  </aside>
-</main>
-
-<!-- ========== Bottom bar ========== -->
-<footer id="bottombar">
-  <div><span class="status-dot"></span> активен</div>
-  <div><small>FPS</small> <b id="fps">0</b></div>
-  <div><small>кадр</small> <b id="frame">0</b></div>
-  <div><small>эпоха</small> <b id="epoch-f">1</b></div>
-  <div><small>loss</small> <b id="loss">0</b></div>
-  <div class="brand-foot">🎪 Digital Circus AI 3.0 · Evolutionary RL · physics · split-screen</div>
-</footer>
-
-<!-- ========== Stats modal ========== -->
-<div class="modal" id="stats-modal">
-  <div class="modal-box">
-    <div class="modal-hdr">
-      <h2>🧠 Нейросети</h2>
-      <button class="close" id="stats-close">×</button>
-    </div>
-    <div class="modal-body">
-      <div class="brain-col">
-        <h3>КЕЙН (красный)</h3>
-        <canvas id="brain-canvas-red" width="560" height="260"></canvas>
-        <ul class="memlist" id="mem-red"></ul>
-      </div>
-      <div class="brain-col">
-        <h3>ЭЙС (синий)</h3>
-        <canvas id="brain-canvas-blue" width="560" height="260"></canvas>
-        <ul class="memlist" id="mem-blue"></ul>
-      </div>
-    </div>
-    <div class="modal-foot">
-      <div>Архитектура: 48 → 112 → 80 → 56 → (V+A) → 12 actions. Rainbow-like DQN: Dueling · Double · N-step(5) · PER · NoisyNet · RND (intrinsic curiosity) · Layer-Norm · SiLU · Adam.</div>
-      <div id="save-info">—</div>
-    </div>
-  </div>
-</div>
-
-<!-- ========== Evolution modal ========== -->
-<div class="modal" id="evo-modal">
-  <div class="modal-box wide">
-    <div class="modal-hdr">
-      <h2>🧬 Эволюция — чемпионы</h2>
-      <button class="close" id="evo-close">×</button>
-    </div>
-    <div class="modal-body col">
-      <div class="hint">Чемпион на каждую (агент, игра) обновляется ТОЛЬКО если новый рекорд строго превышает предыдущий. Пример: 200 очков останется рекордом, пока кто-то не наберёт ≥201.</div>
-      <div id="evo-table-host"></div>
-      <div class="acts">
-        <button class="btn sm primary" id="evo-apply-red">✔ Применить красного чемпиона (для текущей игры)</button>
-        <button class="btn sm primary" id="evo-apply-blue">✔ Применить синего чемпиона (для текущей игры)</button>
-      </div>
-    </div>
-  </div>
-</div>
-
-<!-- ========== Multi-sim modal ========== -->
-<div class="modal" id="multisim-modal">
-  <div class="modal-box">
-    <div class="modal-hdr">
-      <h2>⚡ Параллельные симуляции (×4)</h2>
-      <button class="close" id="multisim-close">×</button>
-    </div>
-    <div class="modal-body col">
-      <div class="hint">Запускает N независимых клонов мозга в выбранной игре (headless-режим). Каждый клон немного мутирован, лучший заменяет чемпиона, если строго превосходит прежний рекорд. Игровое время × 4 относительно реального.</div>
-      <div class="form-row">
-        <label>Игра</label>
-        <select id="multisim-game"></select>
-      </div>
-      <div class="form-row">
-        <label>Агент</label>
-        <select id="multisim-color"></select>
-      </div>
-      <div class="form-row">
-        <label>Популяция</label>
-        <input type="number" id="multisim-pop" value="8" min="2" max="24" />
-      </div>
-      <div class="form-row">
-        <label>Эпизодов/клон</label>
-        <input type="number" id="multisim-eps" value="2" min="1" max="10" />
-      </div>
-      <div class="acts">
-        <button class="btn primary" id="multisim-run">🚀 Запустить</button>
-      </div>
-      <div id="multisim-progress" class="progress-box">—</div>
-    </div>
-  </div>
-</div>
-
-<!-- ========== Megatrain modal ========== -->
-<div class="modal" id="megatrain-modal">
-  <div class="modal-box">
-    <div class="modal-hdr">
-      <h2>🎯 Мегатренинг — обучение на всех играх</h2>
-      <button class="close" id="megatrain-close">×</button>
-    </div>
-    <div class="modal-body col">
-      <div class="hint">Пошагово проходит все 5 игр при x4 game-time. Для каждой: оценка «до», быстрое обучение, multi-sim, оценка «после». В конце — отчёт и вопрос «применить лучшего агента» для каждой игры.</div>
-      <div class="form-row">
-        <label>Агент</label>
-        <select id="megatrain-who">
-          <option value="red">КЕЙН (красный)</option>
-          <option value="blue">ЭЙС (синий)</option>
-        </select>
-      </div>
-      <div class="form-row">
-        <label>Длительность (мин)</label>
-        <input type="number" id="megatrain-mins" value="3" min="1" max="20" />
-      </div>
-      <div class="acts">
-        <button class="btn primary" id="megatrain-run">🚀 Запустить мегатренинг</button>
-      </div>
-      <div id="megatrain-progress" class="progress-box">—</div>
-      <div id="megatrain-report" class="report-box"></div>
-    </div>
-  </div>
-</div>
-
-<script type="module">
-const loading = document.getElementById("loading-screen");
-
-function showFatal(title, err) {
-  console.error(err);
-
-  loading.innerHTML = `
-  <div style="
-    position:fixed;
-    inset:0;
-    background:#0b0613;
-    color:#fff;
-    overflow:auto;
-    padding:20px;
-    font-family:monospace;
-    z-index:999999;
-  ">
-    <h1 style="color:#ff5577;">❌ ${title}</h1>
-
-    <div style="
-      background:#1a1025;
-      padding:15px;
-      border-radius:12px;
-      margin-top:15px;
-      white-space:pre-wrap;
-      line-height:1.5;
-      border:1px solid #ff5577;
-    ">${err?.stack || err}</div>
-
-    <h2 style="margin-top:30px;">📦 Debug Info</h2>
-
-    <div style="
-      background:#111;
-      padding:12px;
-      border-radius:10px;
-      border:1px solid #333;
-      line-height:1.7;
-    ">
-      URL: ${location.href}<br>
-      USER AGENT: ${navigator.userAgent}<br>
-      ONLINE: ${navigator.onLine}<br>
-      SCREEN: ${window.innerWidth} x ${window.innerHeight}<br>
-      TIME: ${new Date().toString()}
-    </div>
-  </div>
-  `;
+<style>
+html,body{
+  margin:0;
+  padding:0;
+  width:100%;
+  height:100%;
+  overflow:hidden;
+  background:#0b0613;
+  color:white;
+  font-family:monospace;
 }
 
-async function loadApp() {
-  try {
-    console.log("🎪 Loading app...");
+#loading-screen{
+  position:fixed;
+  inset:0;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  background:#0b0613;
+  z-index:999999;
+}
+
+.loader-box{
+  width:min(900px,95vw);
+  max-height:90vh;
+  overflow:auto;
+  background:#140d1f;
+  border:1px solid #ff4d7a;
+  border-radius:20px;
+  padding:20px;
+  box-shadow:0 0 40px rgba(255,0,100,.3);
+}
+
+.title{
+  font-size:28px;
+  margin-bottom:10px;
+  color:#ff5b88;
+}
+
+.log{
+  background:#0d0d0d;
+  border:1px solid #333;
+  border-radius:12px;
+  padding:12px;
+  margin-top:15px;
+  white-space:pre-wrap;
+  overflow-wrap:anywhere;
+  line-height:1.5;
+  max-height:400px;
+  overflow:auto;
+}
+
+.ok{
+  color:#67ff9d;
+}
+
+.err{
+  color:#ff6b6b;
+}
+
+.warn{
+  color:#ffd36b;
+}
+
+#app{
+  width:100%;
+  height:100%;
+  display:none;
+}
+</style>
+</head>
+
+<body>
+
+<div id="loading-screen">
+  <div class="loader-box">
+
+    <div class="title">
+      🎪 Digital Circus AI — Full Debug Loader
+    </div>
+
+    <div id="status">
+      Starting...
+    </div>
+
+    <div class="log" id="logs"></div>
+
+  </div>
+</div>
+
+<div id="app"></div>
+
+<script type="module">
+
+const logs = document.getElementById("logs");
+const statusEl = document.getElementById("status");
+
+function log(msg, cls=""){
+  console.log(msg);
+
+  const div = document.createElement("div");
+
+  if(cls) div.className = cls;
+
+  div.textContent = msg;
+
+  logs.appendChild(div);
+
+  logs.scrollTop = logs.scrollHeight;
+}
+
+function fatal(title, err){
+
+  statusEl.innerHTML = `
+    <span class="err">❌ ${title}</span>
+  `;
+
+  log("", "");
+
+  log("========== ERROR ==========", "err");
+
+  if(err?.stack){
+    log(err.stack, "err");
+  }else{
+    log(String(err), "err");
+  }
+
+  log("", "");
+
+  log("========== ENVIRONMENT ==========", "warn");
+
+  log("URL: " + location.href);
+  log("USER AGENT: " + navigator.userAgent);
+  log("ONLINE: " + navigator.onLine);
+  log("SCREEN: " + window.innerWidth + " x " + window.innerHeight);
+  log("TIME: " + new Date().toString());
+
+}
+
+window.addEventListener("error", e => {
+  fatal("RUNTIME ERROR", e.error || e.message);
+});
+
+window.addEventListener("unhandledrejection", e => {
+  fatal("PROMISE REJECTION", e.reason);
+});
+
+async function checkFile(path){
+
+  log("📦 Checking " + path);
+
+  const res = await fetch(path);
+
+  if(!res.ok){
+    throw new Error(
+      path + " -> HTTP " + res.status
+    );
+  }
+
+  const txt = await res.text();
+
+  log("✅ Found " + path + " (" + txt.length + " bytes)", "ok");
+
+  return txt;
+}
+
+async function boot(){
+
+  try{
+
+    statusEl.innerHTML = `
+      <span class="warn">🔄 Loading modules...</span>
+    `;
 
     const files = [
+
+      "./js/main.js",
+
       "./js/world.js",
-      "./js/ai/brain.js",
+
       "./js/ai/agent.js",
+      "./js/ai/brain.js",
+
       "./js/games/worldGame.js",
       "./js/games/flappyGame.js",
       "./js/games/mazeGame.js",
       "./js/games/sandboxGame.js",
-      "./js/games/escapeGame.js",
-      "./js/main.js"
+      "./js/games/escapeGame.js"
+
     ];
 
-    for (const file of files) {
-      try {
-        console.log("📦 checking", file);
+    for(const file of files){
 
-        const r = await fetch(file);
-
-        if (!r.ok) {
-          throw new Error(
-            "HTTP " + r.status + " for " + file
-          );
-        }
-
-        console.log("✅ found", file);
-      } catch (e) {
-        showFatal(
-          "FILE LOAD FAILED: " + file,
-          e
-        );
+      try{
+        await checkFile(file);
+      }
+      catch(err){
+        fatal("FILE CHECK FAILED", err);
         return;
       }
+
     }
 
-    console.log("🚀 importing main.js");
+    log("");
+    log("🚀 Importing main.js...", "warn");
 
-    await import("./js/main.js");
+    try{
 
-    console.log("✅ APP STARTED");
+      await import("./js/main.js");
 
-    setTimeout(() => {
-      loading.style.opacity = "0";
+    }catch(err){
 
-      setTimeout(() => {
-        loading.remove();
-      }, 500);
-    }, 500);
+      fatal("IMPORT FAILED", err);
 
-  } catch (err) {
-    showFatal("APP CRASHED", err);
+      return;
+    }
+
+    log("✅ ALL IMPORTS SUCCESSFUL", "ok");
+
+    statusEl.innerHTML = `
+      <span class="ok">✅ App Loaded Successfully</span>
+    `;
+
+    setTimeout(()=>{
+
+      document.getElementById("loading-screen").style.display = "none";
+
+      document.getElementById("app").style.display = "block";
+
+    },1000);
+
   }
+  catch(err){
+
+    fatal("BOOT FAILED", err);
+
+  }
+
 }
 
-window.addEventListener("error", e => {
-  showFatal(
-    "RUNTIME ERROR",
-    e.error || e.message
-  );
-});
+boot();
 
-window.addEventListener("unhandledrejection", e => {
-  showFatal(
-    "PROMISE ERROR",
-    e.reason
-  );
-});
-
-loadApp();
 </script>
+
 </body>
 </html>
