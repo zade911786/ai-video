@@ -247,6 +247,126 @@
   </div>
 </div>
 
-<script type="module" src="./js/main.js"></script>
+<script type="module">
+const loading = document.getElementById("loading-screen");
+
+function showFatal(title, err) {
+  console.error(err);
+
+  loading.innerHTML = `
+  <div style="
+    position:fixed;
+    inset:0;
+    background:#0b0613;
+    color:#fff;
+    overflow:auto;
+    padding:20px;
+    font-family:monospace;
+    z-index:999999;
+  ">
+    <h1 style="color:#ff5577;">❌ ${title}</h1>
+
+    <div style="
+      background:#1a1025;
+      padding:15px;
+      border-radius:12px;
+      margin-top:15px;
+      white-space:pre-wrap;
+      line-height:1.5;
+      border:1px solid #ff5577;
+    ">${err?.stack || err}</div>
+
+    <h2 style="margin-top:30px;">📦 Debug Info</h2>
+
+    <div style="
+      background:#111;
+      padding:12px;
+      border-radius:10px;
+      border:1px solid #333;
+      line-height:1.7;
+    ">
+      URL: ${location.href}<br>
+      USER AGENT: ${navigator.userAgent}<br>
+      ONLINE: ${navigator.onLine}<br>
+      SCREEN: ${window.innerWidth} x ${window.innerHeight}<br>
+      TIME: ${new Date().toString()}
+    </div>
+  </div>
+  `;
+}
+
+async function loadApp() {
+  try {
+    console.log("🎪 Loading app...");
+
+    const files = [
+      "./js/world.js",
+      "./js/ai/brain.js",
+      "./js/ai/agent.js",
+      "./js/games/worldGame.js",
+      "./js/games/flappyGame.js",
+      "./js/games/mazeGame.js",
+      "./js/games/sandboxGame.js",
+      "./js/games/escapeGame.js",
+      "./js/main.js"
+    ];
+
+    for (const file of files) {
+      try {
+        console.log("📦 checking", file);
+
+        const r = await fetch(file);
+
+        if (!r.ok) {
+          throw new Error(
+            "HTTP " + r.status + " for " + file
+          );
+        }
+
+        console.log("✅ found", file);
+      } catch (e) {
+        showFatal(
+          "FILE LOAD FAILED: " + file,
+          e
+        );
+        return;
+      }
+    }
+
+    console.log("🚀 importing main.js");
+
+    await import("./js/main.js");
+
+    console.log("✅ APP STARTED");
+
+    setTimeout(() => {
+      loading.style.opacity = "0";
+
+      setTimeout(() => {
+        loading.remove();
+      }, 500);
+    }, 500);
+
+  } catch (err) {
+    showFatal("APP CRASHED", err);
+  }
+}
+
+window.addEventListener("error", e => {
+  showFatal(
+    "RUNTIME ERROR",
+    e.error || e.message
+  );
+});
+
+window.addEventListener("unhandledrejection", e => {
+  showFatal(
+    "PROMISE ERROR",
+    e.reason
+  );
+});
+
+loadApp();
+</script>
 </body>
 </html>
